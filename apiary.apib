@@ -1,9 +1,193 @@
 FORMAT: 1A
 HOST: http://polls.apiblueprint.org/
 
-# Bitwala
+# Bitwala API v1
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+Welcome to the Bitwala API documentation. At Bitwala we get the chance to work with partners from all corners of the ecosystem and this is one of the most rewarding parts of the job. These docs are to help you get up and running as quickly as possible. We’re very excited to see what you build.
+
+## Additional Resources
+* [Slack channel](https://slack.bitwala.io)
+* Node client TODO
+* Sample Application TODO
+
+## Communicating with us
+* Technical issues - Chat with us in slack
+* Customer support issues - [send support an email](support@bitwala.io)
+
+## What you can do
+This version of the API is limited to the **bank transfer** functionality of bitwala.
+
+* Get info about Bitwala’s payment services
+* Create bank transfers
+* Manage bank transfers
+
+## Versioning
+We follow a major.minor versioning scheme. Having `/v1` in your path indicates you are using the version 1.x of the api. All 1.x versions will be backwards compatible with previous 1.x versions.
+
+## Changelog
+| Version                            | Date Released | Changes         |
+|------------------------------------|------------|-----------------|
+| v1.0                               | 2017-05-19 | Initial version |
+
+
+## Environments
+There is a sandbox environment and a production environment.
+
+|                                       | Sandbox                           | Production                   |
+|---------------------------------------|-----------------------------------|------------------------------|
+| Endpoint                              | https://sandbox.bitwala.io/api/v1 | https://my.bitwala.io/api/v1 |
+| Mainnet BTC                           | Yes                               | Yes                          |
+| Bitwala admins need to approve access | No                                | Yes                          |
+| Can simulate payment via web GUI?     | Yes                               | No                           |
+
+## Ratelimiting
+API calls are limited to 10 requests per token per second.
+
+# Implementation Choices
+
+We tend to follow the [JSON API conventions](http://jsonapi.org/format/).
+
+## Headers
+All requests must be sent with `Content-Type: application/vnd.api+json`.
+
+## Response format
+
+### Successful responses
+* 200 / 201 status code
+* Top level `data` key with primary data
+* Top level `status` key with value `"success"`
+
+TODO add example
+
+### Error responses
+* 4xx error codes
+* Top level `status` key with value `"error"`
+* Top level `error` key with an error key
+
+TODO add example
+
+| What happened                 | HTTP Status code | Key                         |
+|-------------------------------|------------------|-----------------------------|
+| Cannot find token             | 404              | token-not-found             |
+| Cannot find app               | 404              | app-not-found               |
+| App not authorised by Bitwala | 403              | bitwala-admin-auth-required |
+| App not authorised by user    | 403              | user-auth-required          |
+| Missing permissions           | 403              | missing-permissions         |
+| Missing Headers               | 400              | missing-headers             |
+| Signature is invalid          | 404              | signature-invalid           |
+
+## Webhooks
+Webhooks have a similar format to successful responses, containing a status: ‘success’ key and a data key.
+
+There are two ways to validate:
+1. Check the `X-Bitwala-Signature` is valid (webhook requests are signed in the same way as api requests)
+2. Make an API call to retrieve up to date data
+
+Webhooks are considered successful if they receive a 2xx status. Webhooks are repeated in increasing time intervals while they are not successful. This happens a finite number of times.
+
+| Attempt # | Interval   |
+|-----------|------------|
+| 1         | 1 second   |
+| 2         | 5 seconds  |
+| 3         | 15 seconds |
+| 4         | 1 minute   |
+| 5         | 2 minutes  |
+| 6         | 5 minutes  |
+| 7         | 30 minutes |
+| 8         | 1 hour     |
+| 9         | 4 hour     |
+| 10        | 12 hour    |
+| 11        | 24 hours   |
+
+
+# Authentication
+There are 2 ways to use the Bitwala API. Not sure which one is right for you? Get in touch.
+
+## 1. Internal use
+### Use cases
+* A startup paying fiat salaries, using Bitcoin to fund these payments
+* An ICO backed company liquidating crypto into company’s bank account
+
+### KYC
+**The organisation needs to be KYC’d.**
+
+Once you sign up and your organisation is verified, you can make api calls using a **single token**.
+
+## 2. Customer Use
+### Use cases
+* A wallet giving customers the option to cash out their bitcoins from within the app
+* An app enabling 2 or more parties to split a bill with bitcoin
+
+### KYC
+**Each customer needs to be KYC’d.**
+
+We need to know about each customer. They must create a Bitwala account and go through the regular verification steps. Users give partners permission to act on their behalf. An individual authenticates the app and **a different token must be used for each user.**
+
+## KYC via contract
+Do you have high levels of KYC? In a few cases, we can sign a contract with you, guaranteeing that you will do the KYC to our standards and make it available on request. The advantage is a simpler authentication flow. Please get in touch.
+
+## Authentication flow
+### Internal use
+1. Go to (sanbox.)bitwala.io/api-tokens
+2. Create an app and select “Internal use”
+3. Generate a token (id and secret) and store both securely.
+
+### Customer use
+#### Initial set up 
+1. Go to (sanbox.)bitwala.io/api-tokens
+2. Create an app and select “Customer use”
+3. Customise your app with relevant information that your customers will see e.g. logo
+4. Make a note of your app ID
+
+#### Creating a token and having the user authenticate it
+1. In your app, prompt your users to authenticate via a popup or webview*
+2. The user will be prompted with a screen asking them to accept your permissions. They will be redirected  to the same url with the success=true or false parameter before the window / webview attempts to close itself
+3. Either via detecting a change in the iframe/webview url or testing via the `/auth` endpoint it’s possible to know whether the user authenticated
+
+*The url must match the following pattern `https://bitwala/authenticate/:appId?permissions=BANKTRANSFERS.CREATE,BANKTRANSFER.READ` where the permissions parameter is a comma separated list of permissions.
+ 
+ 
+Note: Users can revoke permissions at any time via the web GUI
+
+## Headers
+In either case, the security headers are the same.
+
+The headers:
+* X-Bitwala-Token - the id of the token
+* X-Bitwala-Signature - data from request signed by the secret of the token
+* X-Bitwala-Nonce - a number that must always be bigger than the last nonce used
+
+### X-Bitwala-Token
+The ID of the token provided at the time of its creation.
+
+### X-Bitwala-Nonce
+This is a number that is higher than the last nonce used. This is to prevent replay attacks.
+
+Best practise is to use a linux timestamp.
+
+Range: 0 - 4102444800000
+
+### X-Bitwala-Signature
+The signature is produced from the token secret, X-Bitwala-Nonce and the request.
+
+`msg = uri_path + SHA256(request_data) + nonce`
+
+`uri_path` is the path of the URI e.g. `/api/v1/transactions`
+
+`nonce` is the `X-Bitwala-Nonce` included as a header
+
+The `SHA256(request_data)` is a SHA256 digest of the `request_data`.
+
+The request data is either
+* For POST requests: the JSON encoded request body
+* For GET requests: the URL encoded query
+
+TODO: examples
+
+If you are able to, using the node client will take care of this for you. Want to write your own client? Please get in touch.
+
+### Testing
+You can check that your authenticating correctly by GETting the `/auth` endpoint.
 
 ## Questions Collection [/questions]
 
