@@ -302,7 +302,7 @@ A typical transfer has a `BitcoinInvoices` doc as the input and a `BankTransfers
 Inputs and outputs have a `status` field that can take one of three values: `new`, `pending`, `confirmed`.
 
 #### Inputs
-* `new` is created. Payment is required.
+* `new` created - payment is required.
 * `pending` payment received, but not confirmed yet (e.g. waiting for X bitcoin confirmations)
 * `confirmed` payment confirmed
 
@@ -317,7 +317,7 @@ A typical payment flow with a bitcoin invoice and bank transfer goes through the
 1. Transaction created - `inputs` and `outputs` have `new` status
 2. Correct Bitcoin payment received - the input changes from `new` to `pending`
 3. The payment confirms X times - the input changes from `pending` to `confirmed`
-4. This triggers the output to chnage from `new` to `pending`
+4. This triggers the output to change from `new` to `pending`
 5. The admin makes the bank transfer and updates the status from `pending` to `confirmed`
 
 Every step except for 4 triggers a webhook.
@@ -332,7 +332,9 @@ Typical cases for a problem status:
 
 In the event of `problem` being set to `true`, `problemStatus` will be set to a string describing the problem.
 
-Problems must be resolved by contacting the Bitwala admin on [support@bitwala.io](mailto:support@bitwala.io).
+Problems must be resolved by contacting the Bitwala admin via [support@bitwala.io](mailto:support@bitwala.io).
+
+When a transaction is marked as having a problem, a webhook will be sent.
 
 #### Multiple inputs / outputs
 It's possible to have multiple inputs or outputs e.g. splitting a payment into multiple bitcoin invoices or making multiple bank transfers with one bitcoin invoice.
@@ -387,78 +389,3 @@ Get a list of transactions, ordered by the most recent. Limited to 50. Paginated
                 "status": "ok"
             }
         }
-
-## Questions Collection [/questions]
-
-
-### List All Questions [GET]
-
-+ Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
-
-+ Request (application/json)
-
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
-
-+ Response 201 (application/json)
-
-    + Headers
-
-            Location: /questions/2
-
-    + Body
-
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
-            }
