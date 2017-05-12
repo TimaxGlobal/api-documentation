@@ -12,7 +12,7 @@ Welcome to the Bitwala API documentation. At Bitwala we get the chance to work w
 
 ## Communicating with us
 * Technical issues - Chat with us in slack
-* Customer support issues - [send support an email](support@bitwala.io)
+* Customer support issues - [support@bitwala.io](mailto:support@bitwala.io)
 
 ## What you can do
 This version of the API is limited to the **bank transfer** functionality of bitwala.
@@ -189,7 +189,207 @@ If you are able to, using the node client will take care of this for you. Want t
 ### Testing
 You can check that your authenticating correctly by GETting the `/auth` endpoint.
 
+# Group Info 
+## Status [/info]
+### Get status [GET]
+Basic call to check that API is working.
++ Response 200 (application/vnd.api+json)
+
+        {
+            "status": "success",
+            "data": {
+                "status": "ok"
+            }
+        }
+
+## Inputs [/info/inputs]
+### List inputs [GET]
+Inputs are ways to pay into Bitwala e.g. a Bitcoin Invoice.
++ Response 200 (application/vnd.api+json)
+
+        {
+            "status": "success",
+            "data": {
+                "status": "ok"
+            }
+        }
+        
+## Outputs [/info/outputs]
+### Get outputs [GET]
+Outputs are possible payment ways that Bitwala can pay out e.g. a EUR bank transfer.
++ Response 200 (application/vnd.api+json)
+
+        {
+            "status": "success",
+            "data": {
+                "status": "ok"
+            }
+        }
+
+# Group Auth
+## Auth [/auth]
+### Check authentication [GET]
+Check that authentication method is valid and, for `Customer Use` partners, get info about permissions.
++ Response 200 (application/vnd.api+json)
+
+        {
+            "status": "success",
+            "data": {
+                "status": "ok"
+            }
+        }
+
+# Group Transactions
+Transactions have the format:
+```
+{
+    "_id": "3mzuZ6Pf7DEpuT8Ro",
+    "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+    "problem": false,
+    "isCanceled": false,
+    "ref": "your_internal_tx_id",
+    "inputsStatus": "confirmed",
+    "outputsStatus": "pending",
+    "inputs": [
+        "collection": "BitcoinInvoices",
+        "doc": {
+            "_id": "rfKx7BnBrCKHqD3",
+            "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+            "status": "confirmed",
+            "convertedCurrency": "EUR",
+            "currency": "XBT",
+            "fee": 0.5,
+            "convertedAmount": 100,
+            "validUntil": ISODate("2016-10-26T12:05:16.217Z"),
+            "total": 0.166225
+            "depositAddress": "1FyWCZnxVeJRVdgCHaDLu5SzMwHuSUtY5a"
+        }
+    ],
+    "outputs": [
+        "collection": "BankTransfers",
+        "doc": {
+            "_id": "heO73mSDx1z21MtM2",
+            "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+            "status": "paid",
+            "amount": 100,
+            "currency": "EUR",
+            "reference": "May Salary",
+            "bankAccount": {
+                "recipientType": "INDIVIDUAL",
+                "firstName": "Satoshi",
+                "lastName": "Nakamoto",
+                "iban": "DE89370400440532013000",
+                "currency": "EUR"
+            }
+            
+        }
+    ]
+}
+```
+### Inputs and outputs
+The `inputs` and `outputs` fields are an array of objects with two keys, `collection` and `doc`.
+
+Inputs are ways that money enters Bitwala. Outputs are ways that money leaves.
+
+A typical transfer has a `BitcoinInvoices` doc as the input and a `BankTransfers` doc as an output. This is the only pair currently supported by the API.
+
+* Inputs convert from the `currency` to the `convertedCurrency`
+* The sum of the `convertedAmount`'s of the inputs must be equal to the sum of `amount`'s of the `outputs`
+* The `convertedCurrency` of the inputs must be the same as the `currency` of the outputs
+* A `fee` denominated in the `convertedCurrency` is added on each of the inputs
+
+### Statuses and flow
+Inputs and outputs have a `status` field that can take one of three values: `new`, `pending`, `confirmed`.
+
+#### Inputs
+* `new` is created. Payment is required.
+* `pending` payment received, but not confirmed yet (e.g. waiting for X bitcoin confirmations)
+* `confirmed` payment confirmed
+
+#### Outputs
+* `new` created
+* `pending` ready to be executed e.g. waiting for admin
+* `confirmed` payment sent out
+
+#### Typical payment flow
+A typical payment flow with a bitcoin invoice and bank transfer goes through the following steps:
+
+1. Transaction created - `inputs` and `outputs` have `new` status
+2. Correct Bitcoin payment received - the input changes from `new` to `pending`
+3. The payment confirms X times - the input changes from `pending` to `confirmed`
+4. This triggers the output to chnage from `new` to `pending`
+5. The admin makes the bank transfer and updates the status from `pending` to `confirmed`
+
+Every step except for 4 triggers a webhook.
+
+#### Problem status
+The payment flow is interrupted whenever `problem` is `true` on the transaction object.
+
+Typical cases for a problem status:
+* Bitcoin payment after an invoice has exprired
+* Underpayment of a bitcoin invoice
+* Bank transfer rejected by the recipient bank
+
+In the event of `problem` being set to `true`, `problemStatus` will be set to a string describing the problem.
+
+Problems must be resolved by contacting the Bitwala admin on [support@bitwala.io](mailto:support@bitwala.io).
+
+#### Multiple inputs / outputs
+It's possible to have multiple inputs or outputs e.g. splitting a payment into multiple bitcoin invoices or making multiple bank transfers with one bitcoin invoice.
+
+## List transactions [/transactions?page={page}]
+### List transactions by page [GET]
+Get a list of transactions, ordered by the most recent. Limited to 50. Paginated
++ Parameters
+    + page (number) - Non-zero postive integer
++ Response 200 (application/vnd.api+json)
+
+        {
+            "status": "success",
+            "data": {
+                "status": "ok"
+            }
+        }
+
+## Get a single transaction by _id [/transactions?id={_id}]        
+### Get a transaction by _id [GET]
++ Parameters
+    + _id (string) - ID of transaction
++ Response 200 (application/vnd.api+json)
+
+        {
+            "status": "success",
+            "data": {
+                "status": "ok"
+            }
+        }
+
+## Get a single transaction by ref [/transactions?ref={ref}]        
+### Get a transaction by ref [GET]
++ Parameters
+    + ref (string) - ref specified at time of transaction creation
++ Response 200 (application/vnd.api+json)
+
+        {
+            "status": "success",
+            "data": {
+                "status": "ok"
+            }
+        }
+
+## Create a transaction [/transactions]
+### Create a transaction [POST]
++ Response 200 (application/vnd.api+json)
+
+        {
+            "status": "success",
+            "data": {
+                "status": "ok"
+            }
+        }
+
 ## Questions Collection [/questions]
+
 
 ### List All Questions [GET]
 
