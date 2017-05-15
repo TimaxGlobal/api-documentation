@@ -128,13 +128,13 @@ Do you have high levels of KYC? In a few cases, we can sign a contract with you,
 
 ## Authentication flow
 ### Internal use
-1. Go to (sanbox.)bitwala.io/api-tokens
+1. Go to (sanbox.)bitwala.io/api-apps
 2. Create an app and select “Internal use”
 3. Generate a token (id and secret) and store both securely.
 
 ### Customer use
 #### Initial set up 
-1. Go to (sanbox.)bitwala.io/api-tokens
+1. Go to (sanbox.)bitwala.io/api-apps
 2. Create an app and select “Customer use”
 3. Customise your app with relevant information that your customers will see e.g. logo
 4. Make a note of your app ID
@@ -250,6 +250,7 @@ Transactions have the format:
     "ref": "your_internal_tx_id",
     "inputsStatus": "confirmed",
     "outputsStatus": "pending",
+    "refundStatus": null,
     "inputs": [
         "collection": "BitcoinInvoices",
         "doc": {
@@ -270,7 +271,7 @@ Transactions have the format:
         "doc": {
             "_id": "heO73mSDx1z21MtM2",
             "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
-            "status": "paid",
+            "status": "pending",
             "amount": 100,
             "currency": "EUR",
             "reference": "May Salary",
@@ -336,7 +337,17 @@ Problems must be resolved by contacting the Bitwala admin via [support@bitwala.i
 
 When a transaction is marked as having a problem, a webhook will be sent.
 
-#### Multiple inputs / outputs
+### Other fields
+#### Transaction
+* `ref` is a custom ref, e.g. an ID from your own business logic
+* `refundStatus` exists when a refund has been processed on a tx
+* `isCanceled` is `true` when the tx has been canceled
+
+#### BankTransfers
+* `paidAt` is the time when the bank transfer was made
+* `reference` is the refence that will be sent with the bank transfer
+
+### Multiple inputs / outputs
 It's possible to have multiple inputs or outputs e.g. splitting a payment into multiple bitcoin invoices or making multiple bank transfers with one bitcoin invoice.
 
 ## List transactions [/transactions?page={page}]
@@ -352,6 +363,7 @@ Get a list of transactions, ordered by the most recent. Limited to 50. Paginated
                 "status": "ok"
             }
         }
+
 
 ## Get a single transaction by _id [/transactions?id={_id}]        
 ### Get a transaction by _id [GET]
