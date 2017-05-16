@@ -229,7 +229,9 @@ Outputs are possible payment ways that Bitwala can pay out e.g. a EUR bank trans
 # Group Auth
 ## Auth [/auth]
 ### Check authentication [GET]
-Check that authentication method is valid and, for `Customer Use` partners, get info about permissions.
+Check that authentication method is valid.
+
+**Customer Use** partners can get info about permissions.
 + Response 200 (application/vnd.api+json)
 
         {
@@ -365,7 +367,7 @@ Get a list of transactions, ordered by the most recent. Limited to 50. Paginated
         }
 
 
-## Get a single transaction by _id [/transactions?id={_id}]        
+## Get a single transaction by _id [/transactions?_id={_id}]        
 ### Get a transaction by _id [GET]
 + Parameters
     + _id (string) - ID of transaction
