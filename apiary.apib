@@ -409,6 +409,34 @@ Get a list of transactions, ordered by the most recent. Limited to 50. Paginated
 
 ## Create a transaction [/transactions]
 ### Create a transaction [POST]
++ Request (application/vnd.api+json)
+
+        {
+            "ref": "My custom id",
+            "inputs": [
+                "collection": "BitcoinInvoices",
+                "doc": {
+                    "currency": "XBT"
+                    "convertedCurrency": "EUR",
+                    "convertedAmount": 100
+                }
+            ],
+            "outputs": [
+                "collection": "BankTransfers",
+                "doc": {
+                    "amount": 100,
+                    "currency": 100,
+                    "reference": "January Salary",
+                    "bankAccount": {
+                        "recipientType": "INDIVIDUAL",
+                        "firstName": "Satoshi",
+                        "lastName": "Nakamoto",
+                        "iban": "DE89370400440532013000",
+                        "currency": "EUR"
+                    }
+                }
+            ]
+        }
 + Response 200 (application/vnd.api+json)
 
         {
