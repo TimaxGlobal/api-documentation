@@ -69,12 +69,13 @@ TODO add example
 | What happened                 | HTTP Status code | Key                         |
 |-------------------------------|------------------|-----------------------------|
 | Cannot find token             | 404              | token-not-found             |
-| Cannot find app               | 404              | app-not-found               |
 | App not authorised by Bitwala | 403              | bitwala-admin-auth-required |
-| App not authorised by user    | 403              | user-auth-required          |
 | Missing permissions           | 403              | missing-permissions         |
 | Missing Headers               | 400              | missing-headers             |
-| Signature is invalid          | 404              | signature-invalid           |
+| Bad nonce                     | 403              | bad-nonce                   |
+| Content Type wrong            | 400              | bad-content-type            |
+| Signature is invalid          | 403              | signature-invalid           |
+| Route not found               | 404              | not-found                   |
 
 ## Webhooks
 Webhooks have a similar format to successful responses, containing a status: ‘success’ key and a data key.
@@ -248,11 +249,12 @@ Transactions have the format:
     "_id": "3mzuZ6Pf7DEpuT8Ro",
     "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
     "problem": false,
+    "problemStatus": "",
     "isCanceled": false,
     "ref": "your_internal_tx_id",
     "inputsStatus": "confirmed",
     "outputsStatus": "pending",
-    "refundStatus": null,
+    "refundStatus": "",
     "inputs": [
         "collection": "BitcoinInvoices",
         "doc": {
@@ -344,6 +346,7 @@ When a transaction is marked as having a problem, a webhook will be sent.
 * `ref` is a custom ref, e.g. an ID from your own business logic
 * `refundStatus` exists when a refund has been processed on a tx
 * `isCanceled` is `true` when the tx has been canceled
+* `problemStatus` gives a description of the problem with the tx
 
 #### BankTransfers
 * `paidAt` is the time when the bank transfer was made
