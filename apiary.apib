@@ -193,13 +193,29 @@ You can check that your authenticating correctly by GETting the `/auth` endpoint
 # Group Info 
 ## Status [/info]
 ### Get status [GET]
-Basic call to check that API is working.
+Call to check that the API is working.
+
+`issues` describes distruptions to our service.
 + Response 200 (application/vnd.api+json)
 
         {
             "status": "success",
             "data": {
-                "status": "ok"
+                "apiStatus": "running",
+                "issues": {
+                    "open": [],
+                    "lastTwoWeeks": [
+                        {
+                            "_id": "TdSXjTxo7LLRY497p",
+                            "title": "Bank Holiday",
+                            "description": "Bank Transfers will not be made on this Monday due to a bank holiday in Germany.",
+                            "incidentType": "Information",
+                            "status": "Resolved",
+                            "createdAt": "2017-05-17T17:21:10.469Z",
+                            "resolvedAt": "2017-05-17T17:21:10.470Z"
+                        }
+                    ]
+                }
             }
         }
 
@@ -211,7 +227,12 @@ Inputs are ways to pay into Bitwala e.g. a Bitcoin Invoice.
         {
             "status": "success",
             "data": {
-                "status": "ok"
+                [
+                    {
+                        "collection": "BitcoinInvoices",
+                        "currency": "XBT"
+                    }
+                ]
             }
         }
         
@@ -223,7 +244,52 @@ Outputs are possible payment ways that Bitwala can pay out e.g. a EUR bank trans
         {
             "status": "success",
             "data": {
-                "status": "ok"
+                [
+                    {
+                        "bankTransfers": [
+                            {
+                                "value": "EUR",
+                                "label": "EUR",
+                                "symbol": "€",
+                                "countryIso": "EUROPEANUNION",
+                                "countryDescription": "SEPA zone",
+                                "eta": {
+                                    "express": {
+                                        "unit": "sameBusinessDay"
+                                    },
+                                    "standard": {
+                                        "unit": "days",
+                                        "from": 1
+                                    }
+                                },
+                                "requiredVerificationLevel": 0,
+                                "bankSchema": "1"
+                            },
+                            {
+                                "value": "GBP",
+                                "label": "GBP",
+                                "symbol": "£",
+                                "countryIso": "GB",
+                                "countryDescription": "United Kingdom",
+                                "eta": {
+                                    "express": {
+                                        "unit": "days",
+                                        "from": 1,
+                                        "to": 3
+                                    },
+                                    "standard": {
+                                        "unit": "days",
+                                        "from": 2,
+                                        "to": 4
+                                    }
+                                },
+                                "requiredVerificationLevel": 0,
+                                "bankSchema": "2"
+                            },
+                            ...
+                        ]
+                    }
+                ]
             }
         }
 
@@ -238,16 +304,14 @@ Check that authentication method is valid.
         {
             "status": "success",
             "data": {
-                {
-                    "app": {
-                        "_id": "mEXPhNZxaZQycfn8E",
-                        "scope": "INTERNAL",
-                        "enabled": true,
-                        "name": "My wonderful app"
-                    },
-                    "token": {
-                        "createdAt": "2017-05-16T13:32:53.689Z"
-                    }
+                "app": {
+                    "_id": "mEXPhNZxaZQycfn8E",
+                    "scope": "INTERNAL",
+                    "enabled": true,
+                    "name": "My wonderful app"
+                },
+                "token": {
+                    "createdAt": "2017-05-16T13:32:53.689Z"
                 }
             }
         }
@@ -430,8 +494,8 @@ Different currencies require different bank schemas.
 Bank schemas must contain
 * `currency` which is the capitalised 3 letter [currency iso](https://en.wikipedia.org/wiki/ISO_4217)
 * `recipientType` which must be `INDIVIDUAL` or `ORGANISATION`
-* When `recipientType` is `INDIVIDUAL`, `firstName` and `lastName` must be supplied
-* When `recipientType` is `ORGAGNISATION`, `organisationName` must be supplied
+* If `INDIVIDUAL`, `firstName` and `lastName` must be supplied
+* If `ORGAGNISATION`, `organisationName` must be supplied
 
 #### Bank Schema 1 (EUR)
 Additionally fields:
