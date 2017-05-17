@@ -409,6 +409,76 @@ Get a list of transactions, ordered by the most recent. Limited to 50. Paginated
 
 ## Create a transaction [/transactions]
 ### Create a transaction [POST]
+### Correctly formatting the bank account
+Different currencies require different bank schemas.
+
+| ISO | Bank Schema |
+|-----|-------------|
+| EUR | 1           |
+| GBP | 2           |
+| USD | 2           |
+| SEK | 2           |
+| HUF | 2           |
+| NOK | 2           |
+| HRK | 2           |
+| CHF | 2           |
+| CZK | 2           |
+| DKK | 2           |
+| PLN | 2           |
+
+#### Common fields
+Bank schemas must contain
+* `currency` which is the capitalised 3 letter [currency iso](https://en.wikipedia.org/wiki/ISO_4217)
+* `recipientType` which must be `INDIVIDUAL` or `ORGANISATION`
+* When `recipientType` is `INDIVIDUAL`, `firstName` and `lastName` must be supplied
+* When `recipientType` is `ORGAGNISATION`, `organisationName` must be supplied
+
+#### Bank Schema 1 (EUR)
+Additionally fields:
+* `iban` - the iban of the bank account
+
+Example:
+```
+{
+    "bankAccount": {
+        "recipientType": "INDIVIDUAL",
+        "firstName": "Satoshi",
+        "lastName": "Nakamoto",
+        "currency": "EUR"
+        "iban": "DE89370400440532013000",
+        
+    }
+}
+```
+
+#### Bank Schema 2 (Other currencies)
+Additionally fields:
+* `accountNumber` is the IBAN or account number of the bank
+* `bic` is the [BIC code](https://en.wikipedia.org/wiki/ISO_9362)
+* `recipientAddress` is address of the recipient
+* `recipientCountry` is the capitalised [2 letter country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) of the recipient
+* `bankName` is the name of the recipient bank
+* `bankAddress` is the address of the recipient bank
+* `bankCountry` is the capitalised [2 letter country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) of the bank
+
+Example: 
+```
+{
+    "bankAccount": {
+        "recipientType": "ORGANISATION",
+        "organisationName": "Satoshi Ltd.",
+        "accountNumber": "GB29NWBK60161331926819",
+        "bic": "MIDLGB22",
+        "recipientAddress": "1 Holborn, London",
+        "recipientCountry": "GB",
+        "bankName": "HSBC",
+        "bankAddress": "1 Chancery Lane, London",
+        "bankCountry": "GB"
+    }
+}
+```
+
+
 + Request (application/vnd.api+json)
 
         {
