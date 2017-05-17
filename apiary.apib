@@ -48,7 +48,7 @@ API calls are limited to 10 requests per token per second.
 We tend to follow the [JSON API conventions](http://jsonapi.org/format/).
 
 ## Headers
-All requests must be sent with `Content-Type: application/vnd.api+json`.
+All requests must be sent with `content-type: application/vnd.api+json`.
 
 ## Response format
 
@@ -81,7 +81,7 @@ TODO add example
 Webhooks have a similar format to successful responses, containing a status: ‘success’ key and a data key.
 
 There are two ways to validate:
-1. Check the `X-Bitwala-Signature` is valid (webhook requests are signed in the same way as api requests)
+1. Check the `x-bitwala-signature` is valid (webhook requests are signed in the same way as api requests)
 2. Make an API call to retrieve up to date data
 
 Webhooks are considered successful if they receive a 2xx status. Webhooks are repeated in increasing time intervals while they are not successful. This happens a finite number of times.
@@ -154,28 +154,28 @@ Note: Users can revoke permissions at any time via the web GUI
 In either case, the security headers are the same.
 
 The headers:
-* X-Bitwala-Token - the id of the token
-* X-Bitwala-Signature - data from request signed by the secret of the token
-* X-Bitwala-Nonce - a number that must always be bigger than the last nonce used
+* x-bitwala-token - the id of the token
+* x-bitwala-signature - data from request signed by the secret of the token
+* x-bitwala-nonce - a number that must always be bigger than the last nonce used
 
-### X-Bitwala-Token
+### x-bitwala-token
 The ID of the token provided at the time of its creation.
 
-### X-Bitwala-Nonce
+### x-bitwala-nonce
 This is a number that is higher than the last nonce used. This is to prevent replay attacks.
 
 Best practise is to use a linux timestamp.
 
 Range: 0 - 4102444800000
 
-### X-Bitwala-Signature
-The signature is produced from the token secret, X-Bitwala-Nonce and the request.
+### x-bitwala-signature
+The signature is produced from the token secret, x-bitwala-nonce and the request.
 
 `msg = uri_path + SHA256(request_data) + nonce`
 
 `uri_path` is the path of the URI e.g. `/api/v1/transactions`
 
-`nonce` is the `X-Bitwala-Nonce` included as a header
+`nonce` is the `x-bitwala-nonce` included as a header
 
 The `SHA256(request_data)` is a SHA256 digest of the `request_data`.
 
