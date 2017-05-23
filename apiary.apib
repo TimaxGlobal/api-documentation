@@ -330,7 +330,7 @@ Transactions have the format:
     "inputsStatus": "confirmed",
     "outputsStatus": "pending",
     "refundStatus": "",
-    "inputs": [
+    "inputs": [{
         "collection": "BitcoinInvoices",
         "doc": {
             "_id": "rfKx7BnBrCKHqD3",
@@ -344,8 +344,8 @@ Transactions have the format:
             "total": 0.166225
             "depositAddress": "1FyWCZnxVeJRVdgCHaDLu5SzMwHuSUtY5a"
         }
-    ],
-    "outputs": [
+    }],
+    "outputs": [{
         "collection": "BankTransfers",
         "doc": {
             "_id": "heO73mSDx1z21MtM2",
@@ -363,7 +363,7 @@ Transactions have the format:
             }
             
         }
-    ]
+    }]
 }
 ```
 ### Inputs and outputs
@@ -445,10 +445,10 @@ Get a list of transactions, ordered by the most recent. Limited to 50. Paginated
         }
 
 
-## Get a single transaction by _id [/transactions?_id={_id}]        
-### Get a transaction by _id [GET]
+## Get a single transaction by transactionId [/transactions?transactionId={transactionId}]        
+### Get a transaction by transactionId [GET]
 + Parameters
-    + _id (string) - ID of transaction
+    + transactionId (string) - ID of transaction
 + Response 200 (application/vnd.api+json)
 
         {
