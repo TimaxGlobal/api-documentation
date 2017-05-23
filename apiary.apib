@@ -579,3 +579,104 @@ Example:
                 "status": "ok"
             }
         }
+        
+## Cancel a transaction [/transactions/cancel]
+It is possible to cancel a not yet paid transaction.
+
+If the transaction has at least one input with not `new` status, an error will be thrown. If you need to cancel such transaction, please, contact support.
+
+Trying to cancel an already canceled transaction will produce an error.
+### Cancel a transaction [POST]
++ Request (application/vnd.api+json)
+
+        {
+           "transactionId": "3mzuZ6Pf7DEpuT8Ro"
+        }
++ Response 200 (application/vnd.api+json)
+
+        {
+            "status": "success",
+            "data": {
+                "canceled": "3mzuZ6Pf7DEpuT8Ro"
+            }
+        }
+
+## Refresh transaction inputs [/transactions/refresh]
+Refreshing transaction inputs means getting new bitcoin invoices for the same transaction. Useful if e.g. an invoice has expired.
+
+`invoices` is an optional field, if it's not provided all transaction inputs will be updated, i.e. replaced with new invoices.
+Specifying `invoices` might be useful to update only particular inputs for a transaction with multiple inputs.
+
+Successful response contains the updated transaction with new inputs for the same currency and amount.
+
+Trying to update a paid invoice (i.e. an invoice with not `new` status) will produce an error.
+### Refresh transaction inputs [POST]
++ Request (application/vnd.api+json)
+
+        {
+           "transactionId": "3mzuZ6Pf7DEpuT8Ro",
+           "invoices": [ "n94t56qLHR7RCeyZW", "JzdSTYx9ZqMDYmbTr" ]
+        }
++ Response 200 (application/vnd.api+json)
+
+        {
+          "status": "success",
+          "data": {
+            "_id": "3mzuZ6Pf7DEpuT8Ro",
+            "ref": "1232342qq",
+            "createdAt": "2017-05-23T12:59:46.008Z",
+            "updatedAt": "2017-05-23T16:04:06.144Z",
+            "inputsStatus": "new",
+            "outputsStatus": "new",
+            "isCanceled": false,
+            "problem": false,
+            "inputs": [
+              {
+                "_id": "bTFXqivmXW7tHbH98",
+                "currency": "XBT",
+                "convertedCurrency": "EUR",
+                "convertedAmount": 200,
+                "fee": 1,
+                "status": "new",
+                "problem": false,
+                "convertedTotal": 201,
+                "depositAddress": "1KFrC4WAR2swxVzYhynont4ficakooAczc",
+                "createdAt": "2017-05-23T16:04:06.123Z",
+                "updatedAt": "2017-05-23T16:04:06.133Z"
+              },
+              {
+                "_id": "ZLAocTusK8iyu9KNG",
+                "currency": "XBT",
+                "convertedCurrency": "EUR",
+                "convertedAmount": 100,
+                "fee": 1,
+                "status": "new",
+                "problem": false,
+                "convertedTotal": 101,
+                "depositAddress": "1KFrC4WAR2swxVzYhynont4ficakooAczc",
+                "createdAt": "2017-05-23T16:04:06.123Z",
+                "updatedAt": "2017-05-23T16:04:06.133Z"
+              }
+            ],
+            "outputs": [
+              {
+                "_id": "ckYiQsD2dxN4gGrLN",
+                "amount": 300,
+                "currency": "EUR",
+                "reference": "May salary",
+                "bankAccount": {
+                  "recipientType": "INDIVIDUAL",
+                  "firstName": "Satoshi",
+                  "lastName": "Nakamoto",
+                  "iban": "DE89370400440532013000",
+                  "currency": "EUR",
+                  "obfuscatedIban": "DE89xxxxxxxxxxxxxxxxx"
+                },
+                "createdAt": "2017-05-23T12:59:45.989Z",
+                "updatedAt": "2017-05-23T12:59:45.989Z",
+                "status": "new",
+                "problem": false
+              }
+            ]
+          }
+        }
