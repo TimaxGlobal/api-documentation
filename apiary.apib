@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: https://sandbox.bitwala.io/api/v1
 
 # Bitwala API v1
 
@@ -78,7 +78,8 @@ TODO add example
 | Route not found               | 404              | not-found                   |
 
 ## Webhooks
-Webhooks have a similar format to successful responses, containing a status: ‘success’ key and a data key.
+Webhooks have a similar format to successful responses, containing a `status: ‘success’` key and a data key. 
+`data` key holds the updated version of the transaction.
 
 There are two ways to validate:
 1. Check the `x-bitwala-signature` is valid (webhook requests are signed in the same way as api requests)
@@ -99,6 +100,12 @@ Webhooks are considered successful if they receive a 2xx status. Webhooks are re
 | 9         | 4 hour     |
 | 10        | 12 hour    |
 | 11        | 24 hours   |
+
+A webhook is triggered when:
+  * a transaction input's status has updated;
+  * a transaction output's status has updated;
+  * transaction was marked as having a problem; 
+  * transaction had a problem and the problem was resolved;
 
 
 # Authentication
@@ -327,6 +334,7 @@ Transactions have the format:
     "problemStatus": "",
     "isCanceled": false,
     "ref": "your_internal_tx_id",
+    "webhookUrl": "https://your.webhookurl.com",
     "inputsStatus": "confirmed",
     "outputsStatus": "pending",
     "refundStatus": "",
@@ -394,13 +402,17 @@ Inputs and outputs have a `status` field that can take one of three values: `new
 #### Typical payment flow
 A typical payment flow with a bitcoin invoice and bank transfer goes through the following steps:
 
-1. Transaction created - `inputs` and `outputs` have `new` status
-2. Correct Bitcoin payment received - the input changes from `new` to `pending`
+1. Transaction created - `inputs` and `outputs` have `new` status, transaction's `inputsStatus` and `outputsStatus` fields are both `new`
+2. Correct Bitcoin payment received for a particular input - the input changes from `new` to `pending`
 3. The payment confirms X times - the input changes from `pending` to `confirmed`
-4. This triggers the output to change from `new` to `pending`
-5. The admin makes the bank transfer and updates the status from `pending` to `confirmed`
+4. When all the inputs become `pending` transaction's `inputsStatus` becomes `pending`
+5. This triggers transaction's `outputsStatus` and the outputs' statuses to change from `new` to `pending`
+6. The admin makes a bank transfer for every output and updates the output's status to `confirmed`
+7. When all the outputs become `confirmed` transaction's `outputsStatus` becomes `confirmed`
 
-Every step except for 4 triggers a webhook.
+A webhook is triggered every time status of a transaction's input or output changes. 
+
+If an input's or output's status change has triggered the change of either `inputsStatus` or `outputsStatus` of the transaction, the webhook body will have these fields properly updated.
 
 #### Problem status
 The payment flow is interrupted whenever `problem` is `true` on the transaction object.
@@ -414,7 +426,7 @@ In the event of `problem` being set to `true`, `problemStatus` will be set to a 
 
 Problems must be resolved by contacting the Bitwala admin via [support@bitwala.io](mailto:support@bitwala.io).
 
-When a transaction is marked as having a problem, a webhook will be sent.
+When a transaction's `problem` field changes, a webhook will be sent.
 
 ### Other fields
 #### Transaction
@@ -422,6 +434,7 @@ When a transaction is marked as having a problem, a webhook will be sent.
 * `refundStatus` exists when a refund has been processed on a tx
 * `isCanceled` is `true` when the tx has been canceled
 * `problemStatus` gives a description of the problem with the tx
+* 'webhookUrl`, if provided, is a url where webhooks for this transaction are going to be sent
 
 #### BankTransfers
 * `paidAt` is the time when the bank transfer was made
@@ -609,7 +622,7 @@ Specifying `invoices` might be useful to update only particular inputs for a tra
 
 Successful response contains the updated transaction with new inputs for the same currency and amount.
 
-Trying to update a paid invoice (i.e. an invoice with not `new` status) will produce an error.
+Trying to update a paid invoice (i.e. an invoice with not `new` status), as well as trying to update input for a canceled transaction, will produce an error.
 ### Refresh transaction inputs [POST]
 + Request (application/vnd.api+json)
 
