@@ -649,15 +649,59 @@ Example:
                 }
             ]
         }
-+ Response 200 (application/vnd.api+json)
++ Response 201 (application/vnd.api+json)
 
         {
             "status": "success",
             "data": {
-                "status": "ok"
+                {
+                  "_id": "3mzuZ6Pf7DEpuT8Ro",
+                  "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+                  "problem": false,
+                  "problemStatus": "",
+                  "isCanceled": false,
+                  "ref": "My custom id",
+                  "inputsStatus": "new",
+                  "outputsStatus": "new",
+                  "refundStatus": "",
+                  "inputs": [{
+                      "collection": "BitcoinInvoices",
+                      "doc": {
+                          "_id": "rfKx7BnBrCKHqD3",
+                          "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+                          "status": "new",
+                          "convertedCurrency": "EUR",
+                          "currency": "XBT",
+                          "fee": 0.5,
+                          "convertedAmount": 100,
+                          "validUntil": ISODate("2016-10-26T12:05:16.217Z"),
+                          "total": 0.166225
+                          "depositAddress": "1FyWCZnxVeJRVdgCHaDLu5SzMwHuSUtY5a"
+                      }
+                  }],
+                  "outputs": [{
+                      "collection": "BankTransfers",
+                      "doc": {
+                          "_id": "heO73mSDx1z21MtM2",
+                          "createdAt": ISODate("2017-01-24T07:20:5984Z"),
+                          "status": "pending",
+                          "amount": 100,
+                          "currency": "EUR",
+                          "reference": "January Salary",
+                          "bankAccount": {
+                              "recipientType": "INDIVIDUAL",
+                              "firstName": "Satoshi",
+                              "lastName": "Nakamoto",
+                              "iban": "DE89370400440532013000",
+                              "currency": "EUR"
+                          }
+            
+                      }
+                  }]
+              }
             }
         }
-        
+
 ## Cancel a transaction [/transactions/cancel]
 It is possible to cancel a not yet paid transaction.
 
