@@ -168,6 +168,8 @@ The headers:
 ### x-bitwala-token
 The ID of the token provided at the time of its creation.
 
+Example: `WcjGxNg93BQzPEXrh`
+
 ### x-bitwala-nonce
 This is a number that is higher than the last nonce used. This is to prevent replay attacks.
 
@@ -175,8 +177,18 @@ Best practise is to use a linux timestamp.
 
 Range: 0 - 4102444800000
 
+Example: `1495712605839`
+
 ### x-bitwala-signature
-The signature is produced from the token secret, x-bitwala-nonce and the request.
+The signature is produced from the token secret, x-bitwala-nonce and the request and is a hex-string representation of the result of the following hash calculation:
+
+`HMAC-SHA512(secret, msg)`
+
+Where:
+
+`secret` is the API token secret,
+
+`msg` is a utf-8 string, constructed by concatenating request URI path, hexdigest of the request data and nonce:
 
 `msg = uri_path + SHA256(request_data) + nonce`
 
@@ -190,7 +202,60 @@ The request data is either
 * For POST requests: the JSON encoded request body
 * For GET requests: the URL encoded query
 
-TODO: examples
+#### Example 1 (signing a POST request)
+Your API token id is `WcjGxNg93BQzPEXrh`
+
+Your API token secret is `KsmBR7ny1Xj7sQR5FemteMEKATIr7kGUn9/dQnuM7EKBagyX5HNLdt+Uj92+Uihd`
+
+You are making a POST request to `/api/v1/transactions/cancel`, the nonce is `1495712605839` and the POST request body is `{"transactionId":"DqDfZBbhFHXXhMXB33K"}`
+
+`uri_path` is then `/api/v1/transactions/cancel`
+
+In such case `request_data` is the JSON encoded POST request body, i.e. string `{"transactionId":"DqDfZBbhFHXXhMXB33K"}`
+
+`msg` is then `/api/v1/transactions/cancel9c99258e64d38a652600b46fff5f7951a2663095501b4fd60b237d69b8ce5a2d1495712605839`
+
+`x-bitwala-signature` is then `25093dc010099ad8240aedf96129d622dd082e10df7d3a272e48ce0abe6a645cf99fe38895c390f182110d8a31867058281db597f82c79b96c8d1028adc58d6c`
+
+#### Example 2 (signing a GET request)
+Your API token id is `WcjGxNg93BQzPEXrh`
+
+Your API token secret is `KsmBR7ny1Xj7sQR5FemteMEKATIr7kGUn9/dQnuM7EKBagyX5HNLdt+Uj92+Uihd`
+
+You are making a GET request to `/api/v1/transactions?page=1`, the nonce is `1495712605839`
+
+`uri_path` is then `/api/v1/transactions?page=1`
+
+In such case `request_data` is the URL encoded query, i.e. string `page=1`
+
+`msg` is then `/api/v1/transactions?page=1c5c34f0fdf091a49d75cc51b4f64ab34cbae49cf4914bb0a0a1c0c599b7a43731495712605839`
+
+`x-bitwala-signature` is then `afe76be769c02ced85542c41ca15632d673bf9c708b584731a500c5062a778ab7a2af3edddd8c12994a5ebc2c204f3e5d11ad2612846659bd6a12fb84d95c402`
+
+#### Example 3 (verifying a webhook signature)
+You received a webhook - a POST request with the following headers:
+
+`x-bitwala-token`: `WcjGxNg93BQzPEXrh` - this is the id of the API token, which was used to create this webhook.
+
+`x-bitwala-nonce`: `1495712605839`
+
+`x-bitwala-signature`: `103efa9353aed4beffab87abf0f9869b8f839119c8a042e9f8f1621f4d0aa2c42368a7fd6ac5ec2b9590300b7dbf768273e1d72b967dcbc07adb935840abb6c7`
+
+
+The secret of the API token with id `WcjGxNg93BQzPEXrh` is `KsmBR7ny1Xj7sQR5FemteMEKATIr7kGUn9/dQnuM7EKBagyX5HNLdt+Uj92+Uihd`
+
+To verify a webhook you can calculate its expected signature in the same way as in example 1 and compare the result with the `x-bitwala-signature` header:
+
+The URL, where you received the webhook is `https://my.webhookurl.com` - this is the `uri_path`
+
+The webhook POST request body is `{"status":"success","data":"some_data"}` - this is the `request_data`
+
+`nonce` is the `x-bitwala-nonce` header
+
+`msg` is then `https://my.webhookurl.com54b5d3f1d8a7680754ae1c5214afd3b50f1ed0b194ec345d8223649e753f87921495712605839`
+
+And the right signature in this case really is `103efa9353aed4beffab87abf0f9869b8f839119c8a042e9f8f1621f4d0aa2c42368a7fd6ac5ec2b9590300b7dbf768273e1d72b967dcbc07adb935840abb6c7`
+
 
 If you are able to, using the [node client](https://github.com/bitwala/api-node-client) will take care of this for you. Want to write your own client? Please get in touch.
 
