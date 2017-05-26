@@ -195,7 +195,7 @@ Where:
 `uri_path` is the path of the URI e.g. `/api/v1/transactions`
 
 `nonce` is the `x-bitwala-nonce` included as a header
-
+ 
 The `SHA256(request_data)` is a SHA256 digest of the `request_data`.
 
 The request data is either
@@ -508,6 +508,9 @@ When a transaction's `problem` field changes, a webhook will be sent.
 ### Multiple inputs / outputs
 It's possible to have multiple inputs or outputs e.g. splitting a payment into multiple bitcoin invoices or making multiple bank transfers with one bitcoin invoice.
 
+### Add a partner fee
+As a partner, you can add an extra fee to transactions that will be paid out to you monthly. This is done by adding the `partnerFeePercentage` argument when you create a transaction. The value of partner fees will be stored in fiat currency opposed to Bitcoin etc.
+
 ## List transactions [/transactions?page={page}]
 ### List transactions by page [GET]
 Get a list of transactions, ordered by the most recent. Limited to 50. Paginated
@@ -620,11 +623,16 @@ Example:
 }
 ```
 
+### Partner fees
+You can a partner fee by adding the `partnerFeePercentage` key to your transaction object. The value should be the percentage of the amount that will charged to the end user and paid out to the partner.
+
+e.g. €100 bank transfer with a partner fee of 1% (`partnerFeePercentage: 1`) means collected fees of €1.
 
 + Request (application/vnd.api+json)
 
         {
             "ref": "My custom id",
+            "partnerFeePercentage": 1,
             "inputs": [
                 "collection": "BitcoinInvoices",
                 "doc": {
