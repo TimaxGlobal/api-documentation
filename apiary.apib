@@ -628,6 +628,8 @@ You can a partner fee by adding the `partnerFeePercentage` key to your transacti
 
 e.g. €100 bank transfer with a partner fee of 1% (`partnerFeePercentage: 1`) means collected fees of €1.
 
+This can be a value between 0 and 3.
+
 + Request (application/vnd.api+json)
 
         {
@@ -669,6 +671,7 @@ e.g. €100 bank transfer with a partner fee of 1% (`partnerFeePercentage: 1`) m
                   "problemStatus": "",
                   "isCanceled": false,
                   "ref": "My custom id",
+                  "partnerFeePercentage": 1,
                   "inputsStatus": "new",
                   "outputsStatus": "new",
                   "refundStatus": "",
