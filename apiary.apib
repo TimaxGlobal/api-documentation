@@ -535,7 +535,49 @@ Get a list of transactions, ordered by the most recent. Limited to 50. Paginated
         {
             "status": "success",
             "data": {
-                "status": "ok"
+                "_id": "transactionId",
+                "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+                "problem": false,
+                "problemStatus": "",
+                "isCanceled": false,
+                "ref": "your_internal_tx_id",
+                "webhookUrl": "https://your.webhookurl.com",
+                "inputsStatus": "confirmed",
+                "outputsStatus": "pending",
+                "refundStatus": "",
+                "inputs": [{
+                    "collection": "BitcoinInvoices",
+                    "doc": {
+                        "_id": "rfKx7BnBrCKHqD3",
+                        "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+                        "status": "confirmed",
+                        "convertedCurrency": "EUR",
+                        "currency": "XBT",
+                        "fee": 0.5,
+                        "convertedAmount": 100,
+                        "validUntil": ISODate("2016-10-26T12:05:16.217Z"),
+                        "total": 0.166225
+                        "depositAddress": "1FyWCZnxVeJRVdgCHaDLu5SzMwHuSUtY5a"
+                    }
+                }],
+                "outputs": [{
+                    "collection": "BankTransfers",
+                    "doc": {
+                        "_id": "heO73mSDx1z21MtM2",
+                        "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+                        "status": "pending",
+                        "amount": 100,
+                        "currency": "EUR",
+                        "reference": "May Salary",
+                        "bankAccount": {
+                            "recipientType": "INDIVIDUAL",
+                            "firstName": "Satoshi",
+                            "lastName": "Nakamoto",
+                            "iban": "DE89370400440532013000",
+                            "currency": "EUR"
+                        }
+                    }
+                }]
             }
         }
 
@@ -548,7 +590,49 @@ Get a list of transactions, ordered by the most recent. Limited to 50. Paginated
         {
             "status": "success",
             "data": {
-                "status": "ok"
+                "_id": "3mzuZ6Pf7DEpuT8Ro",
+                "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+                "problem": false,
+                "problemStatus": "",
+                "isCanceled": false,
+                "ref": "ref",
+                "webhookUrl": "https://your.webhookurl.com",
+                "inputsStatus": "confirmed",
+                "outputsStatus": "pending",
+                "refundStatus": "",
+                "inputs": [{
+                    "collection": "BitcoinInvoices",
+                    "doc": {
+                        "_id": "rfKx7BnBrCKHqD3",
+                        "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+                        "status": "confirmed",
+                        "convertedCurrency": "EUR",
+                        "currency": "XBT",
+                        "fee": 0.5,
+                        "convertedAmount": 100,
+                        "validUntil": ISODate("2016-10-26T12:05:16.217Z"),
+                        "total": 0.166225
+                        "depositAddress": "1FyWCZnxVeJRVdgCHaDLu5SzMwHuSUtY5a"
+                    }
+                }],
+                "outputs": [{
+                    "collection": "BankTransfers",
+                    "doc": {
+                        "_id": "heO73mSDx1z21MtM2",
+                        "createdAt": ISODate("2017-01-24T07:20:59.884Z"),
+                        "status": "pending",
+                        "amount": 100,
+                        "currency": "EUR",
+                        "reference": "May Salary",
+                        "bankAccount": {
+                            "recipientType": "INDIVIDUAL",
+                            "firstName": "Satoshi",
+                            "lastName": "Nakamoto",
+                            "iban": "DE89370400440532013000",
+                            "currency": "EUR"
+                        }
+                    }
+                }]
             }
         }
 
