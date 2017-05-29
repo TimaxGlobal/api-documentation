@@ -152,7 +152,7 @@ Do you have high levels of KYC? In a few cases, we can sign a contract with you,
 2. The user will be prompted with a screen asking them to accept your permissions. They will be redirected  to the same url with the success=true or false parameter before the window / webview attempts to close itself
 3. Either via detecting a change in the iframe/webview url or testing via the `/auth` endpoint it’s possible to know whether the user authenticated
 
-*The url must match the following pattern `https://bitwala/authenticate/:appId?permissions=BANKTRANSFERS.CREATE,BANKTRANSFER.READ` where the permissions parameter is a comma separated list of permissions.
+*The url must match the following pattern `https://bitwala/authenticate/:app?permissions=BANKTRANSFERS.CREATE,BANKTRANSFER.READ` where the permissions parameter is a comma separated list of permissions.
  
  
 Note: Users can revoke permissions at any time via the web GUI
