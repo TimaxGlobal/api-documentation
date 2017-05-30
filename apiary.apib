@@ -740,15 +740,15 @@ This can be a value between 0 and 3.
         {
             "ref": "My custom id",
             "partnerFeePercentage": 1,
-            "inputs": [
+            "inputs": [{
                 "collection": "BitcoinInvoices",
                 "doc": {
-                    "currency": "XBT"
+                    "currency": "XBT",
                     "convertedCurrency": "EUR",
                     "convertedAmount": 100
                 }
-            ],
-            "outputs": [
+            }],
+            "outputs": [{
                 "collection": "BankTransfers",
                 "doc": {
                     "amount": 100,
@@ -762,7 +762,7 @@ This can be a value between 0 and 3.
                         "currency": "EUR"
                     }
                 }
-            ]
+            }]
         }
 + Response 201 (application/vnd.api+json)
 
