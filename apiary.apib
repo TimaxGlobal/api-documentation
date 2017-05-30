@@ -666,7 +666,7 @@ Different currencies require different bank schemas.
 |-----|-------------|
 | EUR | 1           |
 | GBP | 2           |
-| USD | 2           |
+| USD | 2, 3 *      |
 | SEK | 2           |
 | HUF | 2           |
 | NOK | 2           |
@@ -675,6 +675,8 @@ Different currencies require different bank schemas.
 | CZK | 2           |
 | DKK | 2           |
 | PLN | 2           |
+
+\* schema 3 is used to send USD to US (when `currency` is `USD` and `bankCountry` is `US`), if not to US - schema 2 is used.
 
 #### Common fields
 Bank schemas must contain
@@ -716,17 +718,68 @@ Example:
 {
     "bankAccount": {
         "recipientType": "ORGANISATION",
-        "organisationName": "Satoshi Ltd.",
+        "organisationName": "Satoshi Ltd",
         "accountNumber": "GB29NWBK60161331926819",
         "bic": "MIDLGB22",
         "recipientAddress": "1 Holborn, London",
         "recipientCountry": "GB",
+        "currency": "GBP",
         "bankName": "HSBC",
         "bankAddress": "1 Chancery Lane, London",
         "bankCountry": "GB"
     }
 }
 ```
+
+#### Bank Schema 3 (USD to US)
+Has the same format as schema 2, but extends it with one additional field:
+* `USDbankRoutingNumber` - US bank routing number. It has the format of 9 digits (digits only, no spaces, dashes or other characters)
+
+Example:
+```
+{
+    "bankAccount": {
+        "recipientType": "ORGANISATION",
+        "organisationName": "Satoshi Ltd",
+        "accountNumber": "1234567890123",
+        "bic": "USBKUS44",
+        "USDbankRoutingNumber": "091000022",
+        "recipientAddress": "1 Cloquet Ave, Cloquet, MN 55720",
+        "recipientCountry": "US",
+        "currency": "USD",
+        "bankName": "U.S. BANK",
+        "bankAddress": "715 Cloquet Ave, Cloquet, MN 55720",
+        "bankCountry": "US"
+    }
+}
+```
+
+### Currency restrictions
+Not any currency can be sent to any country. There're few rules, which determine, which currency can be sent to a given country:
+* USD can be sent worldwide;
+* transfers inside the [SEPA](https://en.wikipedia.org/wiki/Single_Euro_Payments_Area) can be either in USD, EUR, or recipient country's currency (e.g. PLN);
+* transfers outside the SEPA can be either in USD or recipient country's currency (e.g. KRW).
+
+Trying to create a transaction that doesn't comply to these rules will produce a 422 error. An example of error, that would occur if trying to send GBP to Germany:
+
+```
+{
+  "status": "error",
+  "error": "invalid-fields",
+  "errorDescription": "Request body contained invalid data",
+  "invalidKeys": [
+    {
+      "name": "outputs.0.doc.bankAccount.iban",
+      "type": "Bank account country doesn't match the currency. Transfers inside the SEPA should be made in EUR, USD or target country's currency",
+      "value": "DE89370400440532013000"
+    }
+  ]
+}
+```
+
+
+
+
 
 ### Partner fees
 You can a partner fee by adding the `partnerFeePercentage` key to your transaction object. The value should be the percentage of the amount that will charged to the end user and paid out to the partner.
