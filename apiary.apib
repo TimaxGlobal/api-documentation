@@ -93,6 +93,8 @@ All requests must be sent with `content-type: application/vnd.api+json`. All res
 | Content Type wrong            | 400              | bad-content-type            |
 | Signature is invalid          | 403              | signature-invalid           |
 | Route not found               | 404              | not-found                   |
+| Invalid JSON in request body  | 400              | bad-json                    |
+| Too many requests             | 429              | rate-limit-exceeded         |
 
 ## Webhooks
 Webhooks have a similar format to successful responses, containing a `status: ‘success’` key and a data key. 
