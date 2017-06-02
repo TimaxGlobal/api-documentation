@@ -953,6 +953,18 @@ Specifying `invoices` might be useful to update only particular inputs for a tra
 Successful response contains the updated transaction with new inputs for the same currency and amount.
 
 Trying to update a paid invoice (i.e. an invoice with not `new` status), as well as trying to update input for a canceled transaction, will produce an error.
+
+### Possible errors
+
+| What happened                                           | HTTP Status code | Key                         |
+|---------------------------------------------------------|------------------|-----------------------------|
+| No transaction found by provided transactionId          | 404              | not-found                   |
+| The specified transaction belongs to another user       | 400              | no-refresh-not-own          |
+| `invoices` field specified non-existing invoices        | 400              | no-refresh-bad-invoices     |
+| Some of inputs to update are already paid               | 400              | no-refresh-paid             |
+| Generating new invoice failed, try again                | 500              | invoice-update-failed       |
+| Invalid data in the request body                        | 422              | invalid-fields              |
+
 ### Refresh transaction inputs [POST]
 + Request (application/vnd.api+json)
 
