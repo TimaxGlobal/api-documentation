@@ -917,6 +917,17 @@ It is possible to cancel a not yet paid transaction.
 If the transaction has at least one input with not `new` status, an error will be thrown. If you need to cancel such transaction, please, contact support.
 
 Trying to cancel an already canceled transaction will produce an error.
+
+### Possible errors
+
+| What happened                                           | HTTP Status code | Key                         |
+|---------------------------------------------------------|------------------|-----------------------------|
+| No transaction found by provided transactionId          | 404              | not-found                   |
+| The specified transaction belongs to another user       | 400              | no-cancel-not-own           |
+| Transaction already canceled                            | 400              | no-cancel-canceled          |
+| Some of transaction's inputs are paid                   | 400              | no-cancel-paid              |
+| Invalid data in the request body                        | 422              | invalid-fields              |
+
 ### Cancel a transaction [POST]
 + Request (application/vnd.api+json)
 
@@ -931,6 +942,7 @@ Trying to cancel an already canceled transaction will produce an error.
                 "canceled": "3mzuZ6Pf7DEpuT8Ro"
             }
         }
+        
 
 ## Refresh transaction inputs [/transactions/refresh]
 Refreshing transaction inputs means getting new bitcoin invoices for the same transaction. Useful if e.g. an invoice has expired.
