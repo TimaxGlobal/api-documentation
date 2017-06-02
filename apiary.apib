@@ -684,12 +684,15 @@ Different currencies require different bank schemas.
 Bank schemas must contain
 * `currency` which is the capitalised 3 letter [currency iso](https://en.wikipedia.org/wiki/ISO_4217)
 * `recipientType` which must be `INDIVIDUAL` or `ORGANISATION`
-* If `INDIVIDUAL`, `firstName` and `lastName` must be supplied
-* If `ORGAGNISATION`, `organisationName` must be supplied
+* If `INDIVIDUAL`, `firstName` and `lastName` must be supplied.
+Total length of `firstName` + `lastName` must not exceed 69 characters for EUR transfers and 31 characters for non-EUR transfers.
+* If `ORGAGNISATION`, `organisationName` must be supplied. Length must not exceed 69 characters for EUR transfers and 31 characters for non-EUR transfers.
+
+Alphanumerical characters, underscores, dashes and spaces are allowed characters for `firstName`, `lastName` and `organisationName`.
 
 #### Bank Schema 1 (EUR)
 Additional fields:
-* `iban` - the iban of the bank account
+* `iban` - the iban of the bank account. Must comply to ISO 13616 IBAN Registry technical specification.
 
 Example:
 ```
