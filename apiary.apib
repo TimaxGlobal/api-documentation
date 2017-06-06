@@ -321,6 +321,7 @@ Inputs are ways to pay into Bitwala e.g. a Bitcoin Invoice.
 When creating a transaction you'll have to specify one or more inputs for it.
 Response contains an array of valid inputs (currently only bitcoin invoices),
 each array item contains `schema` key, describing input's format.
+
 + Response 200 (application/vnd.api+json)
 
         {
@@ -1326,7 +1327,7 @@ Trying to create a transaction that doesn't comply to these rules will produce a
 
 
 ### Partner fees
-You can a partner fee by adding the `partnerFeePercentage` key to your transaction object. The value should be the percentage of the amount that will charged to the end user and paid out to the partner.
+You can set a partner fee by adding the `partnerFeePercentage` key to your transaction object. The value should be the percentage of the amount that will charged to the end user and paid out to the partner.
 
 e.g. €100 bank transfer with a partner fee of 1% (`partnerFeePercentage: 1`) means collected fees of €1.
 
@@ -1336,16 +1337,18 @@ This can be a value between 0 and 3.
 
 | What happened                                           | HTTP Status code | Key                         |
 |---------------------------------------------------------|------------------|-----------------------------|
-| Input amount below minimal                              | 400              | low-input-amount            |
+| Input amount below minimal *                            | 400              | low-input-amount            |
 | Total input amount not equal to total output amount     | 400              | transaction-not-balanced    |
-| Failed to create bitcoin invoice for transaction *      | 500              | attach-invoice-failed       |
-| Invalid data in the request body **                     | 422              | invalid-fields              |
+| Failed to create bitcoin invoice for transaction **     | 500              | attach-invoice-failed       |
+| Invalid data in the request body ***                    | 422              | invalid-fields              |
 
-\* This means that a transaction was created, but generating of a bitcoin invoice for it has failed.
+\* Minimal `convertedAmount` of an input is **€0.1 for sandbox env and €5 for production env**.
+
+\** This means that a transaction was created, but generating of a bitcoin invoice for it has failed.
 This can be fixed either by just creating a new transaction, or by refreshing inputs for the created one.
 To let you do the latter, the response contains also a `transactionId` field, holding id of the created transaction.
 
-\** This happens when your request doesn't have some required fields, or has them in an invalid format.
+\*** This happens when your request doesn't have some required fields, or has them in an invalid format.
 In this case response contains `invalidKeys` field with details, regarding what in particular is wrong, e.g. (assuming input's converted amount was set to an invalid value of `-100`):
 
 ```
