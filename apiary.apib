@@ -317,74 +317,613 @@ Call to check that the API is working.
 ## Inputs [/info/inputs]
 ### List inputs [GET]
 Inputs are ways to pay into Bitwala e.g. a Bitcoin Invoice.
+
+When creating a transaction you'll have to specify one or more inputs for it.
+Response contains an array of valid inputs (currently only bitcoin invoices),
+each array item contains `schema` key, describing input's format.
 + Response 200 (application/vnd.api+json)
 
         {
             "status": "success",
-            "data": {
-                [
-                    {
-                        "collection": "BitcoinInvoices",
-                        "currency": "XBT"
+            "data": [
+                {
+                    "collection": "BitcoinInvoices",
+                    "currency": "XBT",
+                    "schema": {
+                        "collection": {
+                            "type": "string",
+                            "desc": "Type of input",
+                            "validations": {
+                                "required": true,
+                                "allowedValues": [
+                                    "BitcoinInvoices"
+                                ]
+                            }
+                        },
+                        "doc": {
+                            "currency": {
+                                "type": "string",
+                                "desc": "Input currency",
+                                "validations": {
+                                    "required": true,
+                                    "regEx": "/^[A-Z]{3}$/",
+                                    "allowedValues": [
+                                        "XBT"
+                                    ]
+                                }
+                            },
+                            "convertedCurrency": {
+                                "type": "string",
+                                "desc": "Output currency",
+                                "validations": {
+                                    "required": true,
+                                    "regEx": "/^[A-Z]{2}$/",
+                                    "allowedValues": [
+                                        "EUR",
+                                        "GBP",
+                                        "USD",
+                                        "SEK",
+                                        "HUF",
+                                        "NOK",
+                                        "HRK",
+                                        "CHF",
+                                        "CZK",
+                                        "DKK",
+                                        "PLN"
+                                    ]
+                                }
+                            },
+                            "convertedAmount": {
+                                "type": "float",
+                                "desc": "Amount in output currency",
+                                "validations": {
+                                    "required": true,
+                                    "min": 0
+                                }
+                            }
+                        }
                     }
-                ]
-            }
+                }
+            ]
         }
-        
+
+
 ## Outputs [/info/outputs]
 ### Get outputs [GET]
 Outputs are possible payment ways that Bitwala can pay out e.g. a EUR bank transfer.
+
+Response contains info on all currencies, supported for bank transfers, such as bank schema, used for transfers in this currency, estimated time of arrival, etc.
+
+Bank schema defines the required format of the recipient's bank account details.
+Three possible bank schemas are described in the response under the `bankSchemas` key.
+Which schema should be used (1, 2 or 3) depends on bank transfer currency. More detailed info about bank schemas is listed in `Create a transaction` section of this document below.
+
 + Response 200 (application/vnd.api+json)
 
         {
-            "status": "success",
-            "data": {
-                [
+            "status":"success",
+            "data":{
+                "bankTransfers":[
                     {
-                        "bankTransfers": [
-                            {
-                                "value": "EUR",
-                                "label": "EUR",
-                                "symbol": "€",
-                                "countryIso": "EUROPEANUNION",
-                                "countryDescription": "SEPA zone",
-                                "eta": {
-                                    "express": {
-                                        "unit": "sameBusinessDay"
-                                    },
-                                    "standard": {
-                                        "unit": "days",
-                                        "from": 1
-                                    }
-                                },
-                                "requiredVerificationLevel": 0,
-                                "bankSchema": "1"
+                        "value":"EUR",
+                        "label":"EUR",
+                        "symbol":"€",
+                        "countryIso":"EUROPEANUNION",
+                        "countryDescription":"SEPA zone",
+                        "eta":{
+                            "express":{
+                                "unit":"sameBusinessDay"
                             },
-                            {
-                                "value": "GBP",
-                                "label": "GBP",
-                                "symbol": "£",
-                                "countryIso": "GB",
-                                "countryDescription": "United Kingdom",
-                                "eta": {
-                                    "express": {
-                                        "unit": "days",
-                                        "from": 1,
-                                        "to": 3
-                                    },
-                                    "standard": {
-                                        "unit": "days",
-                                        "from": 2,
-                                        "to": 4
-                                    }
-                                },
-                                "requiredVerificationLevel": 0,
-                                "bankSchema": "2"
+                            "standard":{
+                                "unit":"days",
+                                "from":1
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"1"
+                    },
+                    {
+                        "value":"GBP",
+                        "label":"GBP",
+                        "symbol":"£",
+                        "countryIso":"GB",
+                        "countryDescription":"United Kingdom",
+                        "eta":{
+                            "express":{
+                                "unit":"days",
+                                "from":1,
+                                "to":3
                             },
-                            ...
-                        ]
+                            "standard":{
+                                "unit":"days",
+                                "from":2,
+                                "to":4
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"2"
+                    },
+                    {
+                        "value":"USD",
+                        "label":"USD",
+                        "symbol":"$",
+                        "countryIso":"US",
+                        "countryDescription":"United States",
+                        "eta":{
+                            "express":{
+                                "unit":"days",
+                                "from":1,
+                                "to":2
+                            },
+                            "standard":{
+                                "unit":"days",
+                                "from":2,
+                                "to":4
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"3"
+                    },
+                    {
+                        "value":"SEK",
+                        "label":"SEK",
+                        "symbol":"SEK ",
+                        "countryIso":"SE",
+                        "countryDescription":"Sweden",
+                        "eta":{
+                            "express":{
+                                "unit":"days",
+                                "from":1,
+                                "to":3
+                            },
+                            "standard":{
+                                "unit":"days",
+                                "from":2,
+                                "to":4
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"2"
+                    },
+                    {
+                        "value":"HUF",
+                        "label":"HUF",
+                        "symbol":"HUF ",
+                        "countryIso":"HU",
+                        "countryDescription":"Hungary",
+                        "eta":{
+                            "express":{
+                                "unit":"days",
+                                "from":1,
+                                "to":3
+                            },
+                            "standard":{
+                                "unit":"days",
+                                "from":2,
+                                "to":4
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"2"
+                    },
+                    {
+                        "value":"NOK",
+                        "label":"NOK",
+                        "symbol":"kr",
+                        "countryIso":"NO",
+                        "countryDescription":"Norway",
+                        "eta":{
+                            "express":{
+                                "unit":"days",
+                                "from":1,
+                                "to":3
+                            },
+                            "standard":{
+                                "unit":"days",
+                                "from":2,
+                                "to":4
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"2"
+                    },
+                    {
+                        "value":"HRK",
+                        "label":"HRK",
+                        "symbol":"HRK ",
+                        "countryIso":"HR",
+                        "countryDescription":"Croatia",
+                        "eta":{
+                            "express":{
+                                "unit":"days",
+                                "from":1,
+                                "to":3
+                            },
+                            "standard":{
+                                "unit":"days",
+                                "from":2,
+                                "to":4
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"2"
+                    },
+                    {
+                        "value":"CHF",
+                        "label":"CHF",
+                        "symbol":"CHF ",
+                        "countryIso":"CH",
+                        "countryDescription":"Switzerland",
+                        "eta":{
+                            "express":{
+                                "unit":"days",
+                                "from":1,
+                                "to":3
+                            },
+                            "standard":{
+                                "unit":"days",
+                                "from":2,
+                                "to":4
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"2"
+                    },
+                    {
+                        "value":"CZK",
+                        "label":"CZK",
+                        "symbol":"Kč",
+                        "countryIso":"CZ",
+                        "countryDescription":"Czech Republic",
+                        "eta":{
+                            "express":{
+                                "unit":"days",
+                                "from":1,
+                                "to":3
+                            },
+                            "standard":{
+                                "unit":"days",
+                                "from":2,
+                                "to":4
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"2"
+                    },
+                    {
+                        "value":"DKK",
+                        "label":"DKK",
+                        "symbol":"DKK ",
+                        "countryIso":"DK",
+                        "countryDescription":"Denmark",
+                        "eta":{
+                            "express":{
+                                "unit":"days",
+                                "from":1,
+                            "to":3
+                            },
+                            "standard":{
+                                "unit":"days",
+                                "from":2,
+                                "to":4
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"2"
+                    },
+                    {
+                        "value":"PLN",
+                        "label":"PLN",
+                        "symbol":"PLN ",
+                        "countryIso":"PL",
+                        "countryDescription":"Poland",
+                        "eta":{
+                            "express":{
+                                "unit":"days",
+                                "from":1,
+                                "to":3
+                            },
+                            "standard":{
+                                "unit":"days",
+                                "from":2,
+                                "to":4
+                            }
+                        },
+                        "requiredVerificationLevel":0,
+                        "bankSchema":"2"
                     }
-                ]
+                ],
+                "bankSchemas":{
+                    "1":{
+                        "recipientType":{
+                            "type":"string",
+                            "desc":"Recipient type - individual or organisation",
+                            "validations":{
+                                "allowedValues":[
+                                    "INDIVIDUAL",
+                                    "ORGANISATION"
+                                ],
+                                "required":true
+                            }
+                        },
+                        "firstName":{
+                            "type":"string",
+                            "desc":"Recipient first name, if individual. Omit if organisation",
+                            "validations":{
+                                "required":false,
+                                "regEx":"/^[\\w+\\- ]+$/",
+                                "max":"69 chars for first name + last name"
+                            }
+                        },
+                        "lastName":{
+                            "type":"string",
+                            "desc":"Recipient last name, if individual. Omit if organisation",
+                            "validations":{
+                                "required":false,
+                                "regEx":"/^[\\w+\\- ]+$/",
+                                "max":"69 chars for first name + last name"
+                            }
+                        },
+                        "organisationName":{
+                            "type":"string",
+                            "desc":"Recipient organisation name, if organisation. Omit if individual",
+                            "validations":{
+                                "required":false,
+                                "regEx":"/^[\\w+\\- ]+$/",
+                                "max":70
+                            }
+                        },
+                        "currency":{
+                            "type":"string",
+                            "desc":"Bank account currency",
+                            "validations":{
+                                "required":true,
+                                "regEx":"/^[A-Z]{3}$/",
+                                "allowedValues":[
+                                    "EUR"
+                                ]
+                            }
+                        },
+                        "iban":{
+                            "type":"string",
+                            "desc":"Recipient IBAN",
+                            "validations":{
+                                "required":true,
+                                "format":"Must comply to ISO 13616 IBAN Registry technical specification"
+                            }
+                        }
+                    },
+                    "2":{
+                        "recipientType":{
+                            "type":"string",
+                            "desc":"Recipient type - individual or organisation",
+                            "validations":{
+                                "allowedValues":[
+                                    "INDIVIDUAL",
+                                    "ORGANISATION"
+                                ],
+                                "required":true
+                            }
+                        },
+                        "firstName":{
+                            "type":"string",
+                            "desc":"Recipient first name, if individual. Omit if organisation",
+                            "validations":{
+                                "required":false,
+                                "regEx":"/^[\\w+\\- ]+$/",
+                                "max":"31 chars for first name + last name"
+                            }
+                        },
+                        "lastName":{
+                            "type":"string",
+                            "desc":"Recipient last name, if individual. Omit if organisation",
+                            "validations":{
+                                "required":false,
+                                "regEx":"/^[\\w+\\- ]+$/",
+                                "max":"31 chars for first name + last name"
+                            }
+                        },
+                        "organisationName":{
+                            "type":"string",
+                            "desc":"Recipient organisation name, if organisation. Omit if individual",
+                            "validations":{
+                                "required":false,
+                                "regEx":"/^[\\w+\\- ]+$/",
+                                    "max":32
+                            }
+                        },
+                        "currency":{
+                            "type":"string",
+                            "desc":"Bank account currency",
+                            "validations":{
+                                "required":true,
+                                "regEx":"/^[A-Z]{3}$/",
+                                "allowedValues":[
+                                    "GBP",
+                                    "USD",
+                                    "SEK",
+                                    "HUF",
+                                    "NOK",
+                                    "HRK",
+                                    "CHF",
+                                    "CZK",
+                                    "DKK",
+                                    "PLN"
+                                ]
+                            }
+                        },
+                        "accountNumber":{
+                            "type":"string",
+                            "desc":"Recipient bank account number or IBAN",
+                            "validations":{
+                                "required":true
+                            }
+                        },
+                        "bic":{
+                            "type":"string",
+                            "desc":"Bank Identifier Code",
+                            "validations":{
+                                "required":true,
+                                "regEx":"/[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?/i"
+                            }
+                        },
+                        "recipientAddress":{
+                            "type":"string",
+                            "desc":"Recipient address",
+                            "validations":{
+                                "required":true
+                            }
+                        },
+                        "recipientCountry":{
+                            "type":"string",
+                            "desc":"Recipient country",
+                            "validations":{
+                                "required":true,
+                                "regEx":"/^[A-Z]{2}$/"
+                            }
+                        },
+                        "bankName":{
+                            "type":"string",
+                            "desc":"Recipient bank name",
+                            "validations":{
+                                "required":true
+                            }
+                        },
+                        "bankAddress":{
+                            "bankName":{
+                                "type":"string",
+                                "desc":"Recipient bank address",
+                                "validations":{
+                                    "required":true
+                                }
+                            }
+                        },
+                        "bankCountry":{
+                            "type":"string",
+                            "desc":"Recipient bank country",
+                            "validations":{
+                                "required":true,
+                                "regEx":"/^[A-Z]{2}$/"
+                            }
+                        }
+                    },
+                    "3":{
+                        "recipientType":{
+                            "type":"string",
+                            "desc":"Recipient type - individual or organisation",
+                            "validations":{
+                                "allowedValues":[
+                                    "INDIVIDUAL",
+                                    "ORGANISATION"
+                                ],
+                                "required":true
+                            }
+                        },
+                        "firstName":{
+                            "type":"string",
+                            "desc":"Recipient first name, if individual. Omit if organisation",
+                            "validations":{
+                                "required":false,
+                                "regEx":"/^[\\w+\\- ]+$/",
+                                "max":"31 chars for first name + last name"
+                            }
+                        },
+                        "lastName":{
+                            "type":"string",
+                            "desc":"Recipient last name, if individual. Omit if organisation",
+                            "validations":{
+                                "required":false,
+                                "regEx":"/^[\\w+\\- ]+$/",
+                                "max":"31 chars for first name + last name"
+                            }
+                        },
+                        "organisationName":{
+                            "type":"string",
+                            "desc":"Recipient organisation name, if organisation. Omit if individual",
+                            "validations":{
+                                "required":false,
+                                "regEx":"/^[\\w+\\- ]+$/",
+                                "max":32
+                            }
+                        },
+                        "currency":{
+                            "type":"string",
+                            "desc":"Bank account currency",
+                            "validations":{
+                                "required":true,
+                                "regEx":"/^[A-Z]{3}$/",
+                                "allowedValues":[
+                                    "USD"
+                                ]
+                            }
+                        },
+                        "accountNumber":{
+                            "type":"string",
+                            "desc":"Recipient bank account number or IBAN",
+                            "validations":{
+                                "required":true
+                            }
+                        },
+                        "bic":{
+                            "type":"string",
+                            "desc":"Bank Identifier Code",
+                            "validations":{
+                                "required":true,
+                                "regEx":"/[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?/i"
+                            }
+                        },
+                        "recipientAddress":{
+                            "type":"string",
+                            "desc":"Recipient address",
+                            "validations":{
+                                "required":true
+                            }
+                        },
+                        "recipientCountry":{
+                            "type":"string",
+                            "desc":"Recipient country",
+                            "validations":{
+                                "required":true,
+                                "regEx":"/^[A-Z]{2}$/"
+                            }
+                        },
+                        "bankName":{
+                            "type":"string",
+                            "desc":"Recipient bank name",
+                            "validations":{
+                                "required":true
+                            }   
+                        },
+                    "bankAddress":{
+                            "bankName":{
+                                "type":"string",
+                                "desc":"Recipient bank address",
+                                "validations":{
+                                    "required":true
+                                }
+                            }
+                        },
+                        "bankCountry":{
+                            "type":"string",
+                            "desc":"Recipient bank country",
+                            "validations":{
+                                "required":true,
+                                "regEx":"/^[A-Z]{2}$/",
+                                "allowedValues": [
+                                    "US"
+                                ]
+                            }
+                        },
+                        "USDbankRoutingNumber":{
+                            "type":"string",
+                            "desc":"US bank routing number",
+                            "validations":{
+                                "required":true,
+                                "regEx":"/^\\d{9}$/"
+                            }
+                        }
+                    }
+                }
             }
         }
 
