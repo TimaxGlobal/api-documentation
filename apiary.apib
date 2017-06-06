@@ -1349,7 +1349,7 @@ This can be fixed either by just creating a new transaction, or by refreshing in
 To let you do the latter, the response contains also a `transactionId` field, holding id of the created transaction.
 
 \*** This happens when your request doesn't have some required fields, or has them in an invalid format.
-In this case response contains `invalidKeys` field with details, regarding what in particular is wrong, e.g. (assuming input's converted amount was set to an invalid value of `-100`):
+In this case response contains `invalidKeys` field with details, regarding what in particular is wrong, e.g. (assuming `iban` field of an output's `bankAccount` was set to an invalid value of `NOTANIBANATALL`):
 
 ```
 {
