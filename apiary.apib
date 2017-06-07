@@ -1508,6 +1508,7 @@ Trying to update a paid invoice (i.e. an invoice with not `new` status), as well
 | `invoices` field specified non-existing invoices        | 400              | no-refresh-bad-invoices     |
 | Some of inputs to update are already paid               | 400              | no-refresh-paid             |
 | Generating new invoice failed, try again                | 500              | invoice-update-failed       |
+| Transaction is canceled                                 | 400              | no-refresh-canceled         |
 | Invalid data in the request body                        | 422              | invalid-fields              |
 
 ### Refresh transaction inputs [POST]
