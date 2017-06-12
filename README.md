@@ -1,2 +1,1 @@
-# api-documentation
-API Documentation hosted at Apiary
+# [API Documentation](http://docs.bitwala.apiary.io)
