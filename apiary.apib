@@ -1218,7 +1218,7 @@ Different currencies require different bank schemas.
 | DKK | 2           |
 | PLN | 2           |
 
-\* schema 3 is used to send USD to US (when `currency` is `USD` and `bankCountry` is `US`), if not to US - schema 2 is used.
+\* schema 3 is used to send USD to US or Canada (when `currency` is `USD` and `bankCountry` is either `US` or `CA`), if not to US or Canada - schema 2 is used.
 
 #### Common fields
 Bank schemas must contain
@@ -1276,9 +1276,9 @@ Example:
 }
 ```
 
-#### Bank Schema 3 (USD to US)
+#### Bank Schema 3 (USD to US or Canada)
 Has the same format as schema 2, but extends it with one additional field:
-* `USDbankRoutingNumber` - US bank routing number. It has the format of 9 digits (digits only, no spaces, dashes or other characters)
+* `USDbankRoutingNumber` - bank routing number. It has the format of 9 digits (digits only, no spaces, dashes or other characters)
 
 Example:
 ```
