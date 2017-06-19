@@ -176,9 +176,23 @@ First, create a business account at [(sandbox/my).bitwala.io/signup/business](ht
 * `permissions` parameter is a comma separated list of permissions.
 * `transport` is the way the token ID and secret is communicated back to your app
 
-TODO finish
+##### List of permissions
+| Permission               | Description                                    |
+|--------------------------|------------------------------------------------|
+| `bank_transfers_create`  | Create bank transfers                          |
+| `bank_transfers_read`    | View your bank transfers                       |
+| `bank_transfers_refresh` | Refresh payment                                |
+| `bank_transfers_cancel`  | Cancel payment                                 |
+| `bank_transfers_manage`  | Create and manage your existing bank transfers |
 
-Note: Users can revoke permissions at any time via the web GUI
+For most purposes, `bank_transfers_manage` will be sufficient.
+
+##### List of transports
+| Transport                | Description                                    |
+|--------------------------|------------------------------------------------|
+| `COPY`  | User generates a token, then copies it and pastes it into a field into your app|
+
+We are currently working on more transports that will provide a better user experience. We'd love to hear what's useful for you.
 
 ## Authentication Headers
 In either case, the security headers are the same.
