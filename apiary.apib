@@ -1,23 +1,23 @@
 FORMAT: 1A
-HOST: https://sandbox.bitwala.io/api/v1
+HOST: https://sandbox.bitwala.com/api/v1
 
 # Bitwala API v1
 
 Welcome to the Bitwala API documentation. We’re very excited to see what you build.
 
 ## Quickstart
-* Go to https://sandbox.bitwala.io and sign up **as a business**
-* Go to https://sandbox.bitwala.io/api-apps and create an app to get your API tokens
+* Go to https://sandbox.bitwala.com and sign up **as a business**
+* Go to https://sandbox.bitwala.com/api-apps and create an app to get your API tokens
 * Check out the [API Examples](github.com/bitwala/api-examples) or [Node Client](https://github.com/bitwala/api-node-client)
 
 ## Additional Resources
-* [Slack channel](https://slack.bitwala.io)
+* [Slack channel](https://slack.bitwala.com)
 * [Node client](https://github.com/bitwala/api-node-client)
 * [Sample Applications](https://github.com/bitwala/api-examples)
 
 ## Communicating with us
 * Technical issues - Chat with us in slack
-* Customer support issues - [support@bitwala.io](mailto:support@bitwala.io)
+* Customer support issues - [support@bitwala.com](mailto:support@bitwala.com)
 
 ## What you can do
 This version of the API is limited to the **bank transfer** functionality of bitwala.
@@ -40,7 +40,7 @@ There is a sandbox environment and a production environment.
 
 |                                       | Sandbox                           | Production                   |
 |---------------------------------------|-----------------------------------|------------------------------|
-| Endpoint                              | https://sandbox.bitwala.io/api/v1 | https://my.bitwala.io/api/v1 |
+| Endpoint                              | https://sandbox.bitwala.com/api/v1 | https://my.bitwala.com/api/v1 |
 | Mainnet BTC                           | Yes                               | Yes                          |
 | Bitwala admins need to approve access | No                                | Yes                          |
 | Can simulate payment via web GUI?     | Yes                               | No                           |
@@ -159,16 +159,16 @@ We need to know about each customer. They must create a Bitwala account and go t
 Do you have high levels of KYC? In a few cases, we can sign a contract with you, guaranteeing that you will do the KYC to our standards and make it available on request. The advantage is a simpler authentication flow. Please get in touch.
 
 ## Setting up authentication
-First, create a business account at [(sandbox/my).bitwala.io/signup/business](https://sandbox.bitwala.io/signup/business)
+First, create a business account at [(sandbox/my).bitwala.com/signup/business](https://sandbox.bitwala.com/signup/business)
 
 ### Internal use
-1. Go to [(sandbox/my).bitwala.io/api-apps](https://sandbox.bitwala.io/api-apps)
+1. Go to [(sandbox/my).bitwala.com/api-apps](https://sandbox.bitwala.com/api-apps)
 2. Create an app and select “INTERNAL” as the scope
 3. Generate a token (id and secret) and store both securely.
 
 ### Customer use
 #### A. Initial set up 
-1. Go to [(sandbox/my).bitwala.io/api-apps](https://sandbox.bitwala.io/api-apps)
+1. Go to [(sandbox/my).bitwala.com/api-apps](https://sandbox.bitwala.com/api-apps)
 2. Create an app and select “CUSTOMER” as the scope
 3. Make a note of your app ID
 
@@ -1071,7 +1071,7 @@ Typical cases for a problem status:
 
 In the event of `problem` being set to `true`, `problemStatus` will be set to a string describing the problem.
 
-Problems must be resolved by contacting the Bitwala admin via [support@bitwala.io](mailto:support@bitwala.io).
+Problems must be resolved by contacting the Bitwala admin via [support@bitwala.com](mailto:support@bitwala.com).
 
 When a transaction's `problem` field changes, a webhook will be sent.
 
